@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nepal Payroll Calculator | SSF, PF, Tax & CTC</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">🇳🇵</span>
+        <div>
+          <h1>Nepal Payroll System</h1>
+          <p class="subtitle">SSF • PF • Remuneration Tax • CTC • Net Pay</p>
+        </div>
+      </div>
+      <div class="fy-badge">FY 2083/84 (2026/27)</div>
+    </header>
+
+    <main class="main-grid">
+      <!-- LEFT: INPUTS -->
+      <section class="card inputs-card">
+        <h2>Salary Inputs</h2>
+
+        <div class="form-group">
+          <label for="basicSalary">Basic Salary (Monthly) <span class="required">*</span></label>
+          <div class="input-with-prefix">
+            <span>NPR</span>
+            <input type="number" id="basicSalary" value="50000" min="0" step="100" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="allowances">Allowances (Monthly)</label>
+          <div class="input-with-prefix">
+            <span>NPR</span>
+            <input type="number" id="allowances" value="15000" min="0" step="100" />
+          </div>
+          <small>House rent, transport, dearness, medical, etc.</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="scheme">Contribution Scheme</label>
+            <select id="scheme">
+              <option value="ssf" selected>SSF (11% + 20%)</option>
+              <option value="pf">PF only (10% + 10%)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ssfCeiling">SSF Ceiling (Monthly)</label>
+            <div class="input-with-prefix">
+              <span>NPR</span>
+              <input type="number" id="ssfCeiling" value="350000" min="0" step="1000" />
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <h3>Additional Benefits (Annual / Conditional)</h3>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="includeFestival" checked />
+            Include Festival / Dashain Allowance
+          </label>
+          <div class="input-with-prefix mt-1">
+            <span>NPR</span>
+            <input type="number" id="festivalAllowance" value="50000" min="0" step="100" />
+          </div>
+          <small>Usually 1 month basic. Fully taxable.</small>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="includeBonus" />
+            Include Performance / Annual Bonus
+          </label>
+          <div class="input-with-prefix mt-1">
+            <span>NPR</span>
+            <input type="number" id="bonus" value="0" min="0" step="100" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="includeAddAllowance" />
+            Include Additional / Other Allowance (Annual)
+          </label>
+          <div class="input-with-prefix mt-1">
+            <span>NPR</span>
+            <input type="number" id="addAllowance" value="0" min="0" step="100" />
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="form-group">
+          <label for="otherDeductions">Other Monthly Deductions</label>
+          <div class="input-with-prefix">
+            <span>NPR</span>
+            <input type="number" id="otherDeductions" value="0" min="0" step="50" />
+          </div>
+          <small>Loan EMI, advance recovery, etc. (non-tax)</small>
+        </div>
+
+        <button id="calculateBtn" class="btn-primary">Calculate Payroll</button>
+        <button id="resetBtn" class="btn-secondary">Reset</button>
+      </section>
+
+      <!-- RIGHT: RESULTS -->
+      <section class="results">
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+          <div class="summary-card highlight">
+            <span class="label">Monthly Net Pay</span>
+            <span class="value" id="netPay">—</span>
+          </div>
+          <div class="summary-card">
+            <span class="label">Gross Salary (Monthly)</span>
+            <span class="value" id="grossMonthly">—</span>
+          </div>
+          <div class="summary-card">
+            <span class="label">CTC (Annual)</span>
+            <span class="value" id="ctcAnnual">—</span>
+          </div>
+          <div class="summary-card">
+            <span class="label">Monthly Tax (TDS)</span>
+            <span class="value" id="monthlyTax">—</span>
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown -->
+        <div class="card breakdown-card">
+          <h2>Detailed Breakdown</h2>
+
+          <div class="table-wrapper">
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>Component</th>
+                  <th class="right">Monthly (NPR)</th>
+                  <th class="right">Annual (NPR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="section-header">
+                  <td colspan="3">Earnings</td>
+                </tr>
+                <tr>
+                  <td>1. Basic Salary</td>
+                  <td class="right" id="basicM">—</td>
+                  <td class="right" id="basicA">—</td>
+                </tr>
+                <tr>
+                  <td>2. Allowances</td>
+                  <td class="right" id="allowM">—</td>
+                  <td class="right" id="allowA">—</td>
+                </tr>
+                <tr>
+                  <td>Festival / Dashain Allowance</td>
+                  <td class="right" id="festM">—</td>
+                  <td class="right" id="festA">—</td>
+                </tr>
+                <tr>
+                  <td>Bonus / Additional Benefits</td>
+                  <td class="right" id="bonusM">—</td>
+                  <td class="right" id="bonusA">—</td>
+                </tr>
+                <tr class="total-row">
+                  <td><strong>3. Gross Salary</strong></td>
+                  <td class="right" id="grossM"><strong>—</strong></td>
+                  <td class="right" id="grossA"><strong>—</strong></td>
+                </tr>
+
+                <tr class="section-header">
+                  <td colspan="3">Employer Contributions (Cost to Company)</td>
+                </tr>
+                <tr>
+                  <td>4. Employer's SSF / PF Contribution</td>
+                  <td class="right" id="empContribM">—</td>
+                  <td class="right" id="empContribA">—</td>
+                </tr>
+                <tr class="total-row">
+                  <td><strong>9. Cost to the Company (CTC)</strong></td>
+                  <td class="right" id="ctcM"><strong>—</strong></td>
+                  <td class="right" id="ctcA"><strong>—</strong></td>
+                </tr>
+
+                <tr class="section-header">
+                  <td colspan="3">Employee Deductions</td>
+                </tr>
+                <tr>
+                  <td>6. Employee's SSF / PF Contribution</td>
+                  <td class="right" id="eeContribM">—</td>
+                  <td class="right" id="eeContribA">—</td>
+                </tr>
+                <tr>
+                  <td>7. Social Security Tax (SST)</td>
+                  <td class="right" id="sstM">—</td>
+                  <td class="right" id="sstA">—</td>
+                </tr>
+                <tr>
+                  <td>8. Remuneration Tax (Income Tax)</td>
+                  <td class="right" id="taxM">—</td>
+                  <td class="right" id="taxA">—</td>
+                </tr>
+                <tr>
+                  <td>Other Deductions</td>
+                  <td class="right" id="otherM">—</td>
+                  <td class="right" id="otherA">—</td>
+                </tr>
+                <tr class="total-row highlight-row">
+                  <td><strong>Monthly Net Pay</strong></td>
+                  <td class="right" id="netM"><strong>—</strong></td>
+                  <td class="right" id="netA"><strong>—</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tax Computation -->
+        <div class="card tax-card">
+          <h2>Tax Computation Details</h2>
+          <div class="tax-grid">
+            <div>
+              <p><strong>Assessable Income (Annual):</strong> <span id="assessable">—</span></p>
+              <p><strong>Retirement Deduction:</strong> <span id="retDeduction">—</span></p>
+              <p><strong>Taxable Income:</strong> <span id="taxableIncome">—</span></p>
+              <p><strong>SSF Member (SST Waiver):</strong> <span id="ssfWaiver">—</span></p>
+            </div>
+            <div class="slab-box">
+              <h4>Tax by Slab</h4>
+              <ul id="slabDetails"></ul>
+              <p class="total-tax"><strong>Total Annual Tax:</strong> <span id="totalTax">—</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="card notes-card">
+          <h3>Important Notes</h3>
+          <ul>
+            <li>SSF / PF contributions are calculated on <strong>Basic Salary only</strong> (not Gross).</li>
+            <li>SSF members get <strong>0%</strong> on the first slab instead of 1% Social Security Tax.</li>
+            <li>Festival allowance, bonus and additional benefits are fully taxable and added to annual income.</li>
+            <li>Retirement deduction = lower of (actual total contrib, NPR 5,00,000, ⅓ of assessable income).</li>
+            <li>This is an educational tool. Always verify with IRD / SSF / your tax advisor for official compliance.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Nepal Payroll Calculator • Built for educational & HR reference purposes • Rules based on FY 2083/84</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
